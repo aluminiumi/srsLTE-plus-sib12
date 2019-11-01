@@ -21,6 +21,7 @@
 
 #include "srsenb/hdr/radio/enb_radio_multi.h"
 #include <mutex>
+#include <iostream>
 
 namespace srsenb {
 
@@ -30,6 +31,7 @@ enb_radio_multi::~enb_radio_multi() {}
 
 int enb_radio_multi::init(const srslte::rf_args_t& args_, srslte::phy_interface_radio* phy_)
 {
+  std::cout << "enb_radio_multi::init()" << std::endl;
   int ret = radio_multi::init(args_, phy_);
 
   if (ret == SRSLTE_SUCCESS) {

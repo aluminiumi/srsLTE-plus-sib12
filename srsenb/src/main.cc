@@ -399,12 +399,16 @@ int main(int argc, char *argv[])
 
   cout << "---  Software Radio Systems LTE eNodeB  ---" << endl << endl;
 
+  cout << "Parsing args..." << endl;
   parse_args(&args, argc, argv);
+
+  cout << "Initializing (based on args)..." << endl;
   if (enb->init(args)) {
     enb->stop();
     return SRSLTE_ERROR;
   }
 
+  cout << "Initializing metrics..." << endl;
   metricshub.init(enb, args.general.metrics_period_secs);
   metricshub.add_listener(&metrics_screen);
   metrics_screen.set_handle(enb);
@@ -416,12 +420,14 @@ int main(int argc, char *argv[])
   }
 
   // create input thread
+  cout << "Creating input_loop thread..." << endl;
   pthread_t input;
   pthread_create(&input, NULL, &input_loop, &metrics_screen);
 
   bool signals_pregenerated = false;
   if (running) {
     if (args.gui.enable) {
+      cout << "Starting plotting (GUI enabled)..." << endl;
       enb->start_plot();
     }
   }

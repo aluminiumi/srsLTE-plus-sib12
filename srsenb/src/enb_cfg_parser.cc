@@ -31,6 +31,7 @@ namespace srsenb {
 
 int enb::parse_cell_cfg(all_args_t* args, srslte_cell_t* cell)
 {
+  std::cout << "enb::parse_cell_cfd()" << std::endl;
   cell->frame_type = SRSLTE_FDD;
   cell->id         = args->enb.pci;
   cell->cp         = SRSLTE_CP_NORM;
@@ -59,6 +60,7 @@ int enb::parse_cell_cfg(all_args_t* args, srslte_cell_t* cell)
 
 int field_sched_info::parse(libconfig::Setting& root)
 {
+  std::cout << "field_sched_info::parse()" << std::endl;
   data->sched_info_list.resize((uint32_t)root.getLength());
   for (uint32_t i = 0; i < data->sched_info_list.size(); i++) {
     if (not parse_enum_by_number(data->sched_info_list[i].si_periodicity, "si_periodicity", root[i])) {
@@ -90,6 +92,7 @@ int field_sched_info::parse(libconfig::Setting& root)
 
 int field_intra_neigh_cell_list::parse(libconfig::Setting& root)
 {
+  std::cout << "field_intra_neigh_cell_list::parse()" << std::endl;
   data->intra_freq_neigh_cell_list.resize((uint32_t)root.getLength());
   data->intra_freq_neigh_cell_list_present = data->intra_freq_neigh_cell_list.size() > 0;
   for (uint32_t i = 0; i < data->intra_freq_neigh_cell_list.size() && i < ASN1_RRC_MAX_CELL_INTRA; i++) {
@@ -222,6 +225,7 @@ int field_carrier_freqs_info_list::parse(libconfig::Setting& root)
 
 int enb::parse_sib1(std::string filename, sib_type1_s* data)
 {
+  std::cout << "enb::parse_sib1()" << std::endl;
   parser::section sib1("sib1");
 
   sib1.add_field(make_asn1_enum_str_parser("intra_freq_reselection", &data->cell_access_related_info.intra_freq_resel));
@@ -242,6 +246,7 @@ int enb::parse_sib1(std::string filename, sib_type1_s* data)
 
 bool extract_sf_alloc(mbsfn_sf_cfg_s::sf_alloc_c_* store_ptr, const char* name, Setting& root)
 {
+  std::cout << "extract_sf_alloc" << std::endl;
   uint32_t alloc;
   if (root.lookupValue(name, alloc)) {
     switch (store_ptr->type()) {
@@ -301,6 +306,7 @@ int mbsfn_sf_cfg_list_parser::parse(Setting& root)
 
 int enb::parse_sib2(std::string filename, sib_type2_s* data)
 {
+  std::cout << "enb::parse_sib2()" << std::endl;
   parser::section sib2("sib2");
 
   sib2.add_field(make_asn1_enum_str_parser("time_alignment_timer", &data->time_align_timer_common));
@@ -482,6 +488,7 @@ int enb::parse_sib2(std::string filename, sib_type2_s* data)
 
 int enb::parse_sib3(std::string filename, sib_type3_s* data)
 {
+  std::cout << "enb::parse_sib3()" << std::endl;
   parser::section sib3("sib3");
 
   // CellReselectionInfoCommon
@@ -548,6 +555,7 @@ int enb::parse_sib3(std::string filename, sib_type3_s* data)
 
 int enb::parse_sib4(std::string filename, sib_type4_s* data)
 {
+  std::cout << "enb::parse_sib4()" << std::endl;
   parser::section sib4("sib4");
 
   // csg-PhysCellIdRange
@@ -576,6 +584,7 @@ int enb::parse_sib4(std::string filename, sib_type4_s* data)
 
 int enb::parse_sib7(std::string filename, sib_type7_s* data)
 {
+  std::cout << "enb::parse_sib7()" << std::endl;
   parser::section sib7("sib7");
 
   sib7.add_field(new parser::field<uint8>("t_resel_geran", &data->t_resel_geran));
@@ -645,6 +654,7 @@ int enb::parse_sib12(std::string filename, sib_type12_r9_s* data) //team telecom
 
 int enb::parse_sib13(std::string filename, sib_type13_r9_s* data)
 {
+  std::cout << "enb::parse_sib13(\"" << filename << "\", data)" << std::endl;
   parser::section sib13("sib13");
 
   sib13.add_field(make_asn1_seqof_size_parser("mbsfn_area_info_list_size", &data->mbsfn_area_info_list_r9));
@@ -665,6 +675,7 @@ int enb::parse_sib13(std::string filename, sib_type13_r9_s* data)
 
   return parser::parse_section(filename, &sib13);
 }
+
 int mbsfn_area_info_list_parser::parse(Setting& root)
 {
   if (not root.exists("mbsfn_area_info_list")) {
@@ -739,6 +750,7 @@ int mbsfn_area_info_list_parser::parse(Setting& root)
 
 int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_common)
 {
+  std::cout << "enb::parse_sibs()" << std::endl;
   // FIXME: Leave 0 blank for now
   sib_type2_s*     sib2  = &rrc_cfg->sibs[1].set_sib2();
   sib_type3_s*     sib3  = &rrc_cfg->sibs[2].set_sib3();
@@ -779,6 +791,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   sib1->cell_sel_info.q_rx_lev_min_offset             = 0;
 
   // Generate SIB2
+  std::cout << "Generating SIB2" << std::endl;
   if (parse_sib2(args->enb_files.sib_config, sib2)) {
     return -1;
   }
@@ -798,6 +811,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
     sib2->mbsfn_sf_cfg_list.resize(0);
   } else {
     // verify SIB13 is available
+    std::cout << "Verifying if SIB13 is available" << std::endl;
     if (not sib_is_present(sib1->sched_info_list, sib_type_e::sib_type13_v920)) {
       fprintf(stderr, "SIB13 not present in sched_info.\n");
       return -1;
@@ -805,6 +819,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   }
 
   // Generate SIB3 if defined in mapping info
+  std::cout << "Generating SIB3 (if defined in mapping info)" << std::endl;
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type3)) {
     if (parse_sib3(args->enb_files.sib_config, sib3)) {
       return -1;
@@ -812,6 +827,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   }
 
   // Generate SIB4 if defined in mapping info
+  std::cout << "Generating SIB4 (if defined in mapping info)" << std::endl;
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type4)) {
     if (parse_sib4(args->enb_files.sib_config, sib4)) {
       return -1;
@@ -819,6 +835,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   }
 
   // Generate SIB7 if defined in mapping info
+  std::cout << "Generating SIB7 (if defined in mapping info)" << std::endl;
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type7)) {
     if (parse_sib7(args->enb_files.sib_config, sib7)) {
       return -1;
@@ -826,12 +843,14 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   }
 
   // Generate SIB9 if defined in mapping info
+  std::cout << "Generating SIB9 (if defined in mapping info)" << std::endl;
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type9)) {
     if (parse_sib9(args->enb_files.sib_config, sib9)) {
       return -1;
     }
   }
 
+  std::cout << "Generating SIB13 (if defined in mapping info)" << std::endl;
   if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type13_v920)) {
     if (parse_sib13(args->enb_files.sib_config, sib13)) {
       return -1;
@@ -841,6 +860,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   parse_sib12(args->enb_files.sib_config, sib12); // team telecom
 
   // Copy PHY common configuration
+  std::cout << "Copying PHY common configuration" << std::endl;
   bzero(&phy_config_common->cell, sizeof(phy_config_common->cell));
   phy_config_common->prach_cnfg  = sib2->rr_cfg_common.prach_cfg;
   phy_config_common->pdsch_cnfg  = sib2->rr_cfg_common.pdsch_cfg_common;
@@ -853,6 +873,8 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
 
 bool enb::sib_is_present(const sched_info_list_l& l, sib_type_e sib_num)
 {
+  
+  std::cout << "enb::sib_is_present()" << std::endl;
   for (uint32_t i = 0; i < l.size(); i++) {
     for (uint32_t j = 0; j < l[i].sib_map_info.size(); j++) {
       if (l[i].sib_map_info[j] == sib_num) {
@@ -865,6 +887,8 @@ bool enb::sib_is_present(const sched_info_list_l& l, sib_type_e sib_num)
 
 int enb::parse_rr(all_args_t* args, rrc_cfg_t* rrc_cfg)
 {
+
+  std::cout << "enb::parse_rr()" << std::endl;
   /* Transmission mode config section */
   if (args->enb.transmission_mode < 1 || args->enb.transmission_mode > 4) {
     ERROR("Invalid transmission mode (%d). Only indexes 1-4 are implemented.\n", args->enb.transmission_mode);

@@ -46,6 +46,7 @@ void rrc::init(rrc_cfg_t*               cfg_,
                gtpu_interface_rrc*      gtpu_,
                srslte::log*             log_rrc)
 {
+  std::cout << "rrc::init()" << std::endl;
   phy     = phy_; 
   mac     = mac_; 
   rlc     = rlc_; 
@@ -772,6 +773,7 @@ void rrc::config_mac()
 
 uint32_t rrc::generate_sibs()
 {
+  std::cout << "rrc::generate_sibs()" << std::endl;
   // nof_messages includes SIB2 by default, plus all configured SIBs
   uint32_t           nof_messages = 1 + cfg.sib1.sched_info_list.size();
   sched_info_list_l& sched_info   = cfg.sib1.sched_info_list;
@@ -826,6 +828,7 @@ uint32_t rrc::generate_sibs()
 
 void rrc::configure_mbsfn_sibs(sib_type2_s* sib2, sib_type13_r9_s* sib13)
 {
+  std::cout << "rrc::configure_mbsfn_sibs()" << std::endl;
   // Temp assignment of MCCH, this will eventually come from a cfg file
   mcch.msg.set_c1();
   mbsfn_area_cfg_r9_s& area_cfg_r9      = mcch.msg.c1().mbsfn_area_cfg_r9();
@@ -1480,6 +1483,7 @@ void rrc::ue::send_connection_reject()
 
 void rrc::ue::send_connection_setup(bool is_setup)
 {
+  std::cout << "rrc::ue::send_connection_setup()" << std::endl;
   dl_ccch_msg_s dl_ccch_msg;
   dl_ccch_msg.msg.set_c1();
 
@@ -1582,6 +1586,7 @@ void rrc::ue::send_connection_setup(bool is_setup)
   phy_cfg->cqi_report_cfg.nom_pdsch_rs_epre_offset = 0;
 
   // Add SRB1 to Scheduler 
+  std::cout << "rrc::ue::send_connection_setup(): Adding SRB1 to scheduler" << std::endl;
   srsenb::sched_interface::ue_cfg_t sched_cfg; 
   bzero(&sched_cfg, sizeof(srsenb::sched_interface::ue_cfg_t));
   sched_cfg.maxharq_tx              = parent->cfg.mac_cnfg.ul_sch_cfg.max_harq_tx.to_number();
@@ -1745,6 +1750,7 @@ void rrc::ue::send_connection_reconf_upd(srslte::unique_byte_buffer_t pdu)
 
 void rrc::ue::send_connection_reconf(srslte::unique_byte_buffer_t pdu)
 {
+  std::cout << "rrc::ue::send_connection_reconf()" << std::endl;
   dl_dcch_msg_s dl_dcch_msg;
   dl_dcch_msg.msg.set_c1().set_rrc_conn_recfg().crit_exts.set_c1().set_rrc_conn_recfg_r8();
   dl_dcch_msg.msg.c1().rrc_conn_recfg().rrc_transaction_id = (uint8_t)((transaction_id++) % 4);
@@ -1802,6 +1808,7 @@ void rrc::ue::send_connection_reconf(srslte::unique_byte_buffer_t pdu)
   parent->mac->phy_config_enabled(rnti, false);
 
   // Add SRB2 to the message
+  std::cout << "rrc::ue::send_connection_reconf(): Adding SRB2 to the message" << std::endl;
   conn_reconf->rr_cfg_ded.srb_to_add_mod_list_present = true;
   conn_reconf->rr_cfg_ded.srb_to_add_mod_list.resize(1);
   conn_reconf->rr_cfg_ded.srb_to_add_mod_list[0].srb_id            = 2;

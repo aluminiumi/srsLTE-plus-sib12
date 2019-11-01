@@ -56,6 +56,7 @@ void enb::cleanup()
 enb::enb() : started(false), pool(srslte::byte_buffer_pool::get_instance(ENB_POOL_SIZE))
 {
   // print build info
+  std::cout << "Printing build info..." << std::endl;
   std::cout << std::endl << get_build_string() << std::endl;
 
   srslte_dft_load();
@@ -68,6 +69,8 @@ enb::~enb()
 
 int enb::init(const all_args_t& args_)
 {
+  std::cout << "enb::init()" << std::endl;
+
   // Init UE log
   log.init("UE  ", logger);
   log.set_level(srslte::LOG_LEVEL_INFO);
@@ -80,6 +83,7 @@ int enb::init(const all_args_t& args_)
   }
 
   // set logger
+  std::cout << "Setting logger..." << std::endl;
   if (args.log.filename == "stdout") {
     logger = &logger_stdout;
   } else {
@@ -94,18 +98,22 @@ int enb::init(const all_args_t& args_)
   pool->set_log(&pool_log);
 
   // Create layers
+  std::cout << "Creating layers..." << std::endl;
+  std::cout << "...LTE stack" << std::endl;
   std::unique_ptr<enb_stack_lte> lte_stack(new enb_stack_lte(logger));
   if (!lte_stack) {
     log.console("Error creating eNB stack.\n");
     return SRSLTE_ERROR;
   }
 
+  std::cout << "...LTE radio multi instance" << std::endl;
   std::unique_ptr<enb_radio_multi> lte_radio = std::unique_ptr<enb_radio_multi>(new enb_radio_multi(logger));
   if (!lte_radio) {
     log.console("Error creating radio multi instance.\n");
     return SRSLTE_ERROR;
   }
 
+  std::cout << "...LTE PHY instance" << std::endl;
   std::unique_ptr<srsenb::phy> lte_phy = std::unique_ptr<srsenb::phy>(new srsenb::phy(logger));
   if (!lte_phy) {
     log.console("Error creating LTE PHY instance.\n");
@@ -113,6 +121,7 @@ int enb::init(const all_args_t& args_)
   }
 
   // Init layers
+  std::cout << "Initializing layers..." << std::endl;
   if (lte_radio->init(args.rf, lte_phy.get())) {
     log.console("Error initializing radio.\n");
     return SRSLTE_ERROR;
@@ -172,6 +181,8 @@ int enb::parse_args(const all_args_t& args_)
     fprintf(stderr, "Error parsing Cell configuration\n");
     return SRSLTE_ERROR;
   }
+
+  std::cout << "Parsing SIB configuration" << std::endl;
   if (parse_sibs(&args, &rrc_cfg, &phy_cfg)) {
     fprintf(stderr, "Error parsing SIB configuration\n");
     return SRSLTE_ERROR;
@@ -186,9 +197,11 @@ int enb::parse_args(const all_args_t& args_)
   }
 
   if (args.enb.transmission_mode == 1) {
+    std::cout << "Transmission Mode is 1" << std::endl;
     phy_cfg.pdsch_cnfg.p_b = 0; // Default TM1
     rrc_cfg.sibs[1].sib2().rr_cfg_common.pdsch_cfg_common.p_b = 0;
   } else {
+    std::cout << "Transmission Mode is 2, 3, or 4" << std::endl;
     phy_cfg.pdsch_cnfg.p_b = 1; // Default TM2,3,4
     rrc_cfg.sibs[1].sib2().rr_cfg_common.pdsch_cfg_common.p_b = 1;
   }
@@ -206,6 +219,7 @@ int enb::parse_args(const all_args_t& args_)
   }
 
   // Parse EEA preference list
+  std::cout << "Parsing EEA preference list" << std::endl;
   std::vector<std::string> eea_pref_list;
   boost::split(eea_pref_list, args.general.eea_pref_list, boost::is_any_of(","));
   int i = 0;
@@ -230,6 +244,7 @@ int enb::parse_args(const all_args_t& args_)
   }
 
   // Parse EIA preference list
+  std::cout << "Parsing EIA preference list" << std::endl;
   std::vector<std::string> eia_pref_list;
   boost::split(eia_pref_list, args.general.eia_pref_list, boost::is_any_of(","));
   i = 0;
@@ -254,6 +269,7 @@ int enb::parse_args(const all_args_t& args_)
   }
 
   // Copy cell struct to rrc and phy
+  std::cout << "Copying cell struct to rrc and phy" << std::endl;
   rrc_cfg.cell = cell_cfg;
   phy_cfg.cell = cell_cfg;
 
