@@ -636,7 +636,8 @@ int enb::parse_sib12(std::string filename, sib_type12_r9_s* data) //team telecom
   parser::section sib12("sib12");
 
   bool        warning_enabled, coding_enabled;
-  std::string warning_msg_segment, data_coding_scheme;
+  std::string warning_msg_segment;
+  std::string data_coding_scheme;
 
   sib12.add_field(make_asn1_bitstring_number_parser("msg_id_r9", &data->msg_id_r9));
   sib12.add_field(make_asn1_bitstring_number_parser("serial_num_r9", &data->serial_num_r9));
@@ -873,7 +874,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
 
 bool enb::sib_is_present(const sched_info_list_l& l, sib_type_e sib_num)
 {
-  
+
   std::cout << "enb::sib_is_present()" << std::endl;
   for (uint32_t i = 0; i < l.size(); i++) {
     for (uint32_t j = 0; j < l[i].sib_map_info.size(); j++) {
