@@ -1,0 +1,9 @@
+{
+“Message”: “WriteReplaceWarningRequest”,
+“MessageIdentifier”: 4370,
+“SerialNumber”: 16000,
+“RepetitionPeriod”: 1,
+“NumberofBroadcastRequest”: 1,
+“DataCodingScheme”: 1,
+“WarningMessageContents”: “initial sib-12 test”
+}
