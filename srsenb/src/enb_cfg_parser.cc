@@ -758,7 +758,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   sib_type7_s*     sib7  = &rrc_cfg->sibs[6].set_sib7();
   sib_type9_s*     sib9  = &rrc_cfg->sibs[8].set_sib9();
   sib_type13_r9_s* sib13 = &rrc_cfg->sibs[12].set_sib13_v920();
-  sib_type12_r9_s* sib12 = &rrc_cfg->sibs[11].set_sib12_v920();// team telecom
+  sib_type12_r9_s* sib12 = &rrc_cfg->sibs[11].set_sib12_v920(); // team telecom
 
   sib_type1_s* sib1 = &rrc_cfg->sib1;
   if (parse_sib1(args->enb_files.sib_config, sib1)) {
@@ -857,7 +857,14 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
     }
   }
 
-  parse_sib12(args->enb_files.sib_config, sib12); // team telecom
+  std::cout << "Generating SIB12 (if defined in mapping info)" << std::endl;
+  if (sib_is_present(sib1->sched_info_list, sib_type_e::sib_type12_v920)) {
+    if (parse_sib12(args->enb_files.sib_config, sib12)) { // team telecom
+      return -1;
+    }
+  } else {
+    std::cout << "SIB12 is not defined in mapping info" << std::endl;
+  }
 
   // Copy PHY common configuration
   std::cout << "Copying PHY common configuration" << std::endl;
