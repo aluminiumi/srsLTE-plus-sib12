@@ -622,6 +622,27 @@ int enb::parse_sib9(std::string filename, sib_type9_s* data)
   }
 }
 
+int enb::parse_sib12(std::string filename, sib_type12_r9_s* data) //team telecom
+{
+  parser::section sib12("sib12");
+
+  bool        warning_enabled, coding_enabled;
+  std::string warning_msg_segment, data_coding_scheme;
+
+  sib12.add_field(make_asn1_bitstring_number_parser("msg_id_r9", &data->msg_id_r9));
+  sib12.add_field(make_asn1_bitstring_number_parser("serial_num_r9", &data->serial_num_r9));
+  sib12.add_field(new parser::field<std::string>("warning_msg_segment_r9", &warning_msg_segment, &warning_enabled));
+  sib12.add_field(new parser::field<std::string>("data_coding_scheme_r9", &data_coding_scheme, &coding_enabled));
+
+  if (!parser::parse_section(filename, &sib12)) {
+    data->warning_msg_segment_r9.from_string(warning_msg_segment);
+    data->data_coding_scheme_r9.from_string(data_coding_scheme);
+    return 0;
+  } else {
+    return -1;
+  }
+}
+
 int enb::parse_sib13(std::string filename, sib_type13_r9_s* data)
 {
   parser::section sib13("sib13");
@@ -725,6 +746,7 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
   sib_type7_s*     sib7  = &rrc_cfg->sibs[6].set_sib7();
   sib_type9_s*     sib9  = &rrc_cfg->sibs[8].set_sib9();
   sib_type13_r9_s* sib13 = &rrc_cfg->sibs[12].set_sib13_v920();
+  sib_type12_r9_s* sib12 = &rrc_cfg->sibs[11].set_sib12_v920();// team telecom
 
   sib_type1_s* sib1 = &rrc_cfg->sib1;
   if (parse_sib1(args->enb_files.sib_config, sib1)) {
@@ -815,6 +837,8 @@ int enb::parse_sibs(all_args_t* args, rrc_cfg_t* rrc_cfg, phy_cfg_t* phy_config_
       return -1;
     }
   }
+
+  parse_sib12(args->enb_files.sib_config, sib12); // team telecom
 
   // Copy PHY common configuration
   bzero(&phy_config_common->cell, sizeof(phy_config_common->cell));
