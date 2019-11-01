@@ -710,7 +710,7 @@ std::string octstring_to_string(const uint8_t* ptr, uint32_t N)
 void string_to_octstring(uint8_t* ptr, const std::string& str)
 {
   if (str.size() % 2 != 0) {
-    srsasn_log_print(LOG_LEVEL_WARN, "The provided hex string size=%d is not a multiple of 2\n.", str.size());
+    srsasn_log_print(LOG_LEVEL_WARN, "The provided hex string (%s) size=%d is not a multiple of 2\n.", str, str.size());
   }
   char cstr[] = "\0\0\0";
   for (uint32_t i = 0; i < str.size(); i += 2) {

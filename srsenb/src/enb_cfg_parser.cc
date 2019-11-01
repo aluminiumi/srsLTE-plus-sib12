@@ -644,6 +644,9 @@ int enb::parse_sib12(std::string filename, sib_type12_r9_s* data) //team telecom
   sib12.add_field(new parser::field<std::string>("warning_msg_segment_r9", &warning_msg_segment, &warning_enabled));
   sib12.add_field(new parser::field<std::string>("data_coding_scheme_r9", &data_coding_scheme, &coding_enabled));
 
+  std::cout << "data_coding_scheme: " << data_coding_scheme << std::endl;
+  std::cout << "data_coding_scheme: " << data_coding_scheme << std::endl;
+
   if (!parser::parse_section(filename, &sib12)) {
     data->warning_msg_segment_r9.from_string(warning_msg_segment);
     data->data_coding_scheme_r9.from_string(data_coding_scheme);
