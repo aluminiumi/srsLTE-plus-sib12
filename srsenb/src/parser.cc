@@ -28,6 +28,7 @@ using namespace libconfig;
 
 int parser::parse_section(std::string filename, parser::section *s) 
 {
+  std::cout << "parser::parse_section(\"" << filename << "\", section)" << std::endl;
   parser p(filename);
   p.add_section(s);
   return p.parse();
@@ -45,6 +46,8 @@ void parser::add_section(parser::section* s)
 
 int parser::parse()
 {
+  
+  std::cout << "parser::parse(): opening file " << filename.c_str() << " for parsing..."  << std::endl;
   // open file 
   Config cfg;
   
@@ -107,6 +110,7 @@ int parser::section::parse(Setting &root)
   try {
     for (std::list<field_itf*>::iterator ci = fields.begin(); ci != fields.end(); ++ci) {
       field_itf *f = *ci;
+      std::cout << "parser::section::parse(): Parsing field " << f->get_name() << " in section " << name.c_str() << std::endl;
       if (f->parse(root[name.c_str()])) {
         fprintf(stderr, "Error parsing field %s in section %s\n", f->get_name(), name.c_str());
         return -1; 
