@@ -641,6 +641,12 @@ int enb::parse_sib12(std::string filename, sib_type12_r9_s* data) //team telecom
 
   sib12.add_field(make_asn1_bitstring_number_parser("msg_id_r9", &data->msg_id_r9));
   sib12.add_field(make_asn1_bitstring_number_parser("serial_num_r9", &data->serial_num_r9));
+  
+  parser::section warning_msg_segment_type("warning_msg_segment_type");
+  sib12.add_subsection(&warning_msg_segment_type);
+  warning_msg_segment_type.add_field(
+    make_asn1_enum_str_parser("warning_msg_segment_type_r9", &data->warning_msg_segment_type_r9));
+  
   sib12.add_field(new parser::field<std::string>("warning_msg_segment_r9", &warning_msg_segment, &warning_enabled));
   sib12.add_field(new parser::field<std::string>("data_coding_scheme_r9", &data_coding_scheme, &coding_enabled));
 
