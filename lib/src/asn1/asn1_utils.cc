@@ -308,7 +308,7 @@ SRSASN_CODE pack_enum(bit_ref& bref, uint32_t e, uint32_t nof_types, uint32_t no
 {
   if (e >= nof_types) {
     srsasn_log_print(
-        LOG_LEVEL_ERROR, "The provided enum is not within the range of possible values (%d>=%d)\n", e, nof_types);
+        LOG_LEVEL_ERROR, "pack enum: The provided enum is not within the range of possible values (%d>=%d)\n", e, nof_types);
     return SRSASN_ERROR_ENCODE_FAIL;
   }
   SRSASN_CODE ret;
@@ -344,7 +344,7 @@ ValOrError unpack_enum(uint32_t nof_types, uint32_t nof_exts, bool has_ext, bit_
   }
   if (ret.val >= nof_types) {
     srsasn_log_print(
-        LOG_LEVEL_ERROR, "The provided enum is not within the range of possible values (%d>=%d)\n", ret.val, nof_types);
+        LOG_LEVEL_ERROR, "unpacked enum: The provided enum is not within the range of possible values (%d>=%d)\n", ret.val, nof_types);
     ret.code = SRSASN_ERROR_DECODE_FAIL;
   }
   return ret;
