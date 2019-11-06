@@ -131,7 +131,9 @@ void rrc::get_metrics(rrc_metrics_t &m)
 
 void rrc::read_pdu_bcch_dlsch(uint32_t sib_index, uint8_t* payload)
 {
+  std::cout << "rrc::read_pdu_bcch_dlsch(sib_index: " << sib_index << ", payload: " << payload << ")" std::endl;
   if (sib_index < ASN1_RRC_MAX_SIB) {
+    std::cout << "copying contents of sib_buffer[" << sib_index << " to payload" << std::endl;
     memcpy(payload, sib_buffer[sib_index]->msg, sib_buffer[sib_index]->N_bytes);
   }
 }
@@ -745,7 +747,10 @@ void rrc::rem_user(uint16_t rnti)
 
 void rrc::config_mac()
 {
+  std::cout << "rrc::config_mac()" << std::endl;
+
   // Fill MAC scheduler configuration for SIBs
+  std::cout << "rrc::config_mac(): filling MAC scheduler configuration for SIBs" << std::endl;
   sched_interface::cell_cfg_t sched_cfg;
   bzero(&sched_cfg, sizeof(sched_interface::cell_cfg_t));
   for (uint32_t i=0;i<nof_si_messages;i++) {
@@ -766,9 +771,11 @@ void rrc::config_mac()
   rrc_log->info("Allocating %d PRBs for PUCCH\n", sched_cfg.nrb_pucch);
 
   // Copy Cell configuration
+  std::cout << "rrc::config_mac(): copying cell configuration" << std::endl;
   memcpy(&sched_cfg.cell, &cfg.cell, sizeof(srslte_cell_t));
 
   // Configure MAC scheduler
+  std::cout << "rrc::config_mac(): configuring MAC scheduler" << std::endl;
   mac->cell_cfg(&sched_cfg);
 }
 
@@ -777,6 +784,9 @@ uint32_t rrc::generate_sibs()
   std::cout << "rrc::generate_sibs()" << std::endl;
   // nof_messages includes SIB2 by default, plus all configured SIBs
   uint32_t           nof_messages = 1 + cfg.sib1.sched_info_list.size();
+
+  std::cout << "rrc::generate_sibs(): will be sending " << nof_messages << " SIB messages" << std::endl;
+
   sched_info_list_l& sched_info   = cfg.sib1.sched_info_list;
 
   // msg is array of SI messages, each SI message msg[i] may contain multiple SIBs
@@ -784,6 +794,7 @@ uint32_t rrc::generate_sibs()
   asn1::dyn_array<bcch_dl_sch_msg_s> msg(nof_messages + 1);
 
   // Copy SIB1 to first SI message
+  std::cout << "rrc::generate_sibs(): copying SIB1 to first SI message" << std::endl;
   msg[0].msg.set_c1().set_sib_type1() = cfg.sib1;
 
   // Copy rest of SIBs
@@ -795,6 +806,7 @@ uint32_t rrc::generate_sibs()
         msg[msg_index].msg.c1().sys_info().crit_exts.sys_info_r8().sib_type_and_info;
 
     // SIB2 always in second SI message
+    std::cout << "rrc::generate_sibs(): pushing SIB2 onto list" << std::endl;
     if (msg_index == 1) {
       sib_list.push_back(cfg.sibs[1]);
       // Save SIB2
@@ -803,20 +815,24 @@ uint32_t rrc::generate_sibs()
 
     // Add other SIBs to this message, if any
     for (uint32_t mapping = 0; mapping < sched_info[sched_info_elem].sib_map_info.size(); mapping++) {
+      std::cout << "rrc::generate_sibs(): pushing another SIB to the list" << std::endl;
       sib_list.push_back(cfg.sibs[(int)sched_info[sched_info_elem].sib_map_info[mapping] + 2]);
     }
   }
 
   // Pack payload for all messages
   for (uint32_t msg_index = 0; msg_index < nof_messages; msg_index++) {
+    std::cout << "rrc::generate_sibs(): packing payload for message " << msg_index << std::endl;
     srslte::unique_byte_buffer_t sib = srslte::allocate_unique_buffer(*pool);
     asn1::bit_ref          bref(sib->msg, sib->get_tailroom());
     asn1::bit_ref          bref0 = bref;
     msg[msg_index].pack(bref);
     sib->N_bytes = static_cast<uint32_t>((bref.distance(bref0) - 1) / 8 + 1);
+    std::cout << "rrc::generate_sibs(): pushing SIB onto sib_buffer" << std::endl;
     sib_buffer.push_back(std::move(sib));
 
     // Log SIBs in JSON format
+    std::cout << "rrc::generate_sibs(): logging SIB payload in JSON format" << std::endl;
     log_rrc_message("SIB payload", Tx, sib_buffer[msg_index].get(), msg[msg_index]);
   }
 
