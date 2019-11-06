@@ -83,7 +83,7 @@ int enb::init(const all_args_t& args_)
   }
 
   // set logger
-  std::cout << "Setting logger..." << std::endl;
+  std::cout << "Setting log file to " << args.log.filename << std::endl;
   if (args.log.filename == "stdout") {
     logger = &logger_stdout;
   } else {

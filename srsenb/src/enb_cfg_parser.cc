@@ -62,6 +62,7 @@ int field_sched_info::parse(libconfig::Setting& root)
 {
   std::cout << "field_sched_info::parse()" << std::endl;
   data->sched_info_list.resize((uint32_t)root.getLength());
+  std::cout << "field_sched_info::parse(): setting sched_info_list size to " << root.getLength() << std::endl;
   for (uint32_t i = 0; i < data->sched_info_list.size(); i++) {
     if (not parse_enum_by_number(data->sched_info_list[i].si_periodicity, "si_periodicity", root[i])) {
       fprintf(stderr, "Missing field si_periodicity in sched_info=%d\n", i);

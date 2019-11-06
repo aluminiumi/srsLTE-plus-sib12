@@ -131,9 +131,9 @@ void rrc::get_metrics(rrc_metrics_t &m)
 
 void rrc::read_pdu_bcch_dlsch(uint32_t sib_index, uint8_t* payload)
 {
-  std::cout << "rrc::read_pdu_bcch_dlsch(sib_index: " << sib_index << ", payload: " << payload << ")" std::endl;
+  std::cout << "rrc::read_pdu_bcch_dlsch(sib_index: " << sib_index << ", payload: " << std::hex << payload << ")" << std::endl;
   if (sib_index < ASN1_RRC_MAX_SIB) {
-    std::cout << "copying contents of sib_buffer[" << sib_index << " to payload" << std::endl;
+    std::cout << "copying contents of sib_buffer[" << sib_index << " to payload address" << std::endl;
     memcpy(payload, sib_buffer[sib_index]->msg, sib_buffer[sib_index]->N_bytes);
   }
 }
