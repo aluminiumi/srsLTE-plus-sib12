@@ -1,1 +1,2 @@
-sudo srsenb ~/srsLTE-sib12/sib12-conf/epc.conf
+sudo srsepc ~/srsLTE-sib12/sib12-conf/epc.conf
+
