@@ -505,6 +505,8 @@ bool rrc::is_paging_opportunity(uint32_t tti, uint32_t *payload_len)
     return false;
   }
 
+  rrc_log->info("this should appear");
+
   pthread_mutex_lock(&paging_mutex);
 
   asn1::rrc::pcch_msg_s pcch_msg;
